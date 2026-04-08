@@ -1,0 +1,65 @@
+/*-- scss:defaults --*/
+
+/*-- scss:rules --*/
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap');
+
+:root {
+  --accent: #C1593C;
+  --text-primary: #F0EDE8;
+  --text-muted: #8A9BA8;
+  --bg-card: #1A2733;
+  --border: #253545;
+}
+
+.reveal h1, .reveal h2, .reveal h3 {
+  font-family: 'New York', 'Iowan Old Style', Georgia, serif;
+  text-align: left;
+}
+
+.reveal .slides section.quarto-title-block h1.title {
+  font-size: 1.4em;
+}
+
+.reveal h2 { font-size: 1.3em; }
+
+.reveal .slides section:not([data-background-color]) h2::before {
+  content: '';
+  display: block;
+  width: 2rem;
+  height: 3px;
+  background: var(--accent);
+  margin-bottom: 0.4em;
+  border-radius: 2px;
+}
+
+.reveal p, .reveal li {
+  font-family: 'New York', 'Iowan Old Style', Georgia, serif;
+  font-weight: 300;
+}
+
+.reveal blockquote {
+  background: var(--bg-card);
+  border-left: 3px solid var(--accent);
+  padding: 0.8rem 1.2rem;
+  font-style: italic;
+  width: auto;
+  box-shadow: none;
+}
+
+.reveal table { font-family: 'New York', 'Iowan Old Style', Georgia, serif; font-size: 0.72em; }
+.reveal table thead tr { background: var(--accent); }
+.reveal table thead th { color: white; padding: 0.35em 0.8em; border: none; }
+.reveal table tbody td { padding: 0.35em 0.8em; border: none; }
+.reveal table tbody tr { border-bottom: 1px solid var(--border); }
+
+.reveal ul li::marker { color: var(--accent); }
+.reveal ol li::marker { color: var(--accent); font-weight: 600; }
+
+.reveal .progress { color: var(--accent); }
+
+.reveal .slide-number { color: var(--text-muted); background: transparent; }
+
+.reveal .slides img {
+  image-rendering: auto;
+  -webkit-image-rendering: auto;
+}
