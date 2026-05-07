@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment Preview — 2×2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #f5f4f0;
+      min-height: 100vh;
+      padding: 2.5rem 1.5rem;
+    }
+
+    /* ── Tab bar ── */
+    .tab-bar {
+      display: flex;
+      max-width: 680px;
+      margin: 0 auto;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 9px 10px;
+      border: 1px solid #d9d8d2;
+      border-right: none;
+      background: #ede8e1;
+      color: #999;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: inherit;
+      letter-spacing: inherit;
+      text-transform: inherit;
+      text-align: center;
+      line-height: 1.4;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .tab-btn:first-child { border-radius: 4px 0 0 0; }
+    .tab-btn:last-child  { border-radius: 0 4px 0 0; border-right: 1px solid #d9d8d2; }
+
+    .tab-btn .label-cond {
+      display: block;
+      font-weight: 600;
+      color: inherit;
+    }
+
+    .tab-btn .label-who {
+      display: block;
+      font-size: 10px;
+      color: inherit;
+      opacity: 0.8;
+    }
+
+    .tab-btn.active {
+      background: #fff;
+      color: #1a1a1a;
+      border-bottom-color: #fff;
+      font-weight: 500;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2.5rem 3rem;
+      border: 1px solid #d9d8d2;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Typography ── */
+    p {
+      font-size: 15.5px;
+      line-height: 1.8;
+      color: #1a1a1a;
+      margin-bottom: 1.5rem;
+    }
+
+    strong { font-weight: 700; color: #111; }
+
+    hr { border: none; border-top: 1px solid #e5e4df; margin: 1.5rem 0; }
+
+    .sources {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 11.5px;
+      color: #777;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    /* ── Chart ── */
+    .chart-wrap { margin: 1.75rem 0; }
+
+    .chart-title {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: #444;
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 22px;
+      margin-bottom: 12px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .legend span { display: flex; align-items: center; gap: 7px; }
+    .legend-line { width: 24px; height: 3px; border-radius: 2px; display: inline-block; }
+    .legend-dashed { width: 24px; height: 0; border-top: 3px dashed #aaa; display: inline-block; }
+
+    .chart-canvas-wrap { position: relative; width: 100%; height: 230px; }
+
+    .chart-source {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      color: #999;
+      margin-top: 6px;
+    }
+
+    /* ── Continue button ── */
+    .continue-btn {
+      display: block;
+      margin: 2rem auto 0;
+      padding: 11px 32px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .continue-btn:hover { background: #333; }
+
+    /* ── Scenario ── */
+    .scenario {
+      display: none;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e4df;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .scenario-text {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #1a1a1a;
+      background: #f9f8f5;
+      border-left: 3px solid #d9d8d2;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      font-style: italic;
+    }
+
+    .scenario-text strong { font-style: normal; }
+
+    .question-block { margin-bottom: 2rem; }
+
+    .question-label {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .options { display: flex; flex-direction: column; gap: 10px; }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid #e5e4df;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .option:hover { border-color: #bbb; background: #faf9f7; }
+    .option.selected { border-color: #1a1a1a; background: #f5f4f0; }
+
+    .option input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #1a1a1a;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    /* ── Neosexism scale ── */
+    .scale-block {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e4df;
+    }
+
+    .scale-intro {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #555;
+      margin-bottom: 1.25rem;
+      font-style: italic;
+    }
+
+    .likert-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+    }
+
+    .likert-table thead th {
+      font-size: 11px;
+      font-weight: 500;
+      color: #999;
+      text-align: center;
+      padding: 0 4px 10px;
+      border-bottom: 1px solid #e5e4df;
+    }
+
+    .likert-table thead th:first-child { text-align: left; width: 46%; }
+    .likert-table tbody tr:hover td { background: #faf9f7; }
+
+    .likert-table tbody td {
+      padding: 10px 4px;
+      border-bottom: 1px solid #f0ede8;
+      vertical-align: middle;
+      color: #1a1a1a;
+      line-height: 1.4;
+    }
+
+    .likert-table tbody td:first-child { padding-right: 12px; }
+    .likert-table tbody td:not(:first-child) { text-align: center; }
+
+    .likert-table input[type="radio"] {
+      width: 15px;
+      height: 15px;
+      accent-color: #1a1a1a;
+      cursor: pointer;
+    }
+
+    /* ── Condition badge ── */
+      display: inline-block;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    .badge-threat  { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .badge-control { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+  </style>
+</head>
+<body>
+
+<!-- ── Tab bar ── -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('ta')">
+    <span class="label-cond">Threat</span>
+    <span class="label-who">Maya admitted</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('tb')">
+    <span class="label-cond">Threat</span>
+    <span class="label-who">Michael admitted</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('ca')">
+    <span class="label-cond">Control</span>
+    <span class="label-who">Maya admitted</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('cb')">
+    <span class="label-cond">Control</span>
+    <span class="label-who">Michael admitted</span>
+  </button>
+</div>
+
+<div class="card">
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- CELL A: Threat + Maya                  -->
+  <!-- ═══════════════════════════════════════ -->
+  <div id="panel-ta" class="tab-panel active">
+
+    <p>Over the past five decades, women have steadily surpassed men across the U.S. educational system. Today, women earn <strong>58%</strong> of all bachelor's degrees. Among recent high school completers, <strong>65.3%</strong> of women enroll in college, compared to <strong>57.6%</strong> of men. At institutions such as MIT and Caltech, women are now admitted at nearly <strong>twice the rate</strong> of men.</p>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Share of fall enrollment in degree-granting postsecondary institutions,<br>by sex of student, 1970–2026</div>
+      <div class="legend">
+        <span><span class="legend-line" style="background:#185FA5;"></span> Female</span>
+        <span><span class="legend-line" style="background:#1D9E75;"></span> Male</span>
+        <span><span class="legend-dashed"></span> <span style="color:#aaa;">Projected</span></span>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chart-ta"></canvas></div>
+      <div class="chart-source">Source: U.S. Department of Education (AEI / Carpe Diem)</div>
+    </div>
+
+    <p>This educational shift is now reaching the labor market. Of the 369,000 jobs created in the past year, <strong>348,000 — nearly 95% — went to women</strong>. Women now hold more than half of all U.S. jobs, and nearly <strong>80%</strong> of positions in the fastest-growing sector of the economy: health care.</p>
+
+    <hr>
+    <p class="sources">Sources: NCES Digest of Education Statistics (2023); NPR / U.S. Bureau of Labor Statistics (2026)</p>
+
+    <button class="continue-btn" onclick="showScenario('sc-ta')">Continue →</button>
+
+    <div id="sc-ta" class="scenario">
+      <div class="scenario-text">
+        Maya and Michael both applied to a highly selective research university for the class of 2026. Both graduated from competitive public high schools.<br><br>
+        <strong>Maya:</strong> GPA 3.92, SAT 1540.&nbsp;&nbsp;<strong>Michael:</strong> GPA 3.89, SAT 1550.<br><br>
+        Both were active in engineering clubs and received strong letters of recommendation.<br><br>
+        Neither was admitted through the general pool. However, Maya was subsequently offered admission through the university's <strong>Women in STEM Scholarship Initiative</strong>. Michael was not.
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">Michael was not offered admission. Should the admissions committee review its decision?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="ta-q1" value="1"> Definitely not</label>
+          <label class="option"><input type="radio" name="ta-q1" value="2"> Probably not</label>
+          <label class="option"><input type="radio" name="ta-q1" value="3"> Probably yes</label>
+          <label class="option"><input type="radio" name="ta-q1" value="4"> Definitely yes</label>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">Some students who were not admitted have organized a collective lawsuit against the university, claiming gender discrimination in the admissions process. How strongly would you encourage Michael to join?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="ta-q2" value="1"> Not at all</label>
+          <label class="option"><input type="radio" name="ta-q2" value="2"> A little</label>
+          <label class="option"><input type="radio" name="ta-q2" value="3"> Quite a bit</label>
+          <label class="option"><input type="radio" name="ta-q2" value="4"> Very strongly</label>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">How confident are you that they could win the lawsuit?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="ta-q3" value="1"> Not at all confident</label>
+          <label class="option"><input type="radio" name="ta-q3" value="2"> Somewhat confident</label>
+          <label class="option"><input type="radio" name="ta-q3" value="3"> Very confident</label>
+          <label class="option"><input type="radio" name="ta-q3" value="4"> Completely confident</label>
+        </div>
+      </div>
+
+      <div class="scale-block">
+        <div class="scale-intro">Please indicate how much you agree with each of the following statements.</div>
+        <table class="likert-table">
+          <thead><tr>
+            <th></th>
+            <th>Strongly<br>disagree</th><th>Disagree</th><th>Neither</th><th>Agree</th><th>Strongly<br>agree</th>
+          </tr></thead>
+          <tbody id="scale-ta"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- CELL B: Threat + Michael               -->
+  <!-- ═══════════════════════════════════════ -->
+  <div id="panel-tb" class="tab-panel">
+
+    <p>Over the past five decades, women have steadily surpassed men across the U.S. educational system. Today, women earn <strong>58%</strong> of all bachelor's degrees. Among recent high school completers, <strong>65.3%</strong> of women enroll in college, compared to <strong>57.6%</strong> of men. At institutions such as MIT and Caltech, women are now admitted at nearly <strong>twice the rate</strong> of men.</p>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Share of fall enrollment in degree-granting postsecondary institutions,<br>by sex of student, 1970–2026</div>
+      <div class="legend">
+        <span><span class="legend-line" style="background:#185FA5;"></span> Female</span>
+        <span><span class="legend-line" style="background:#1D9E75;"></span> Male</span>
+        <span><span class="legend-dashed"></span> <span style="color:#aaa;">Projected</span></span>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chart-tb"></canvas></div>
+      <div class="chart-source">Source: U.S. Department of Education (AEI / Carpe Diem)</div>
+    </div>
+
+    <p>This educational shift is now reaching the labor market. Of the 369,000 jobs created in the past year, <strong>348,000 — nearly 95% — went to women</strong>. Women now hold more than half of all U.S. jobs, and nearly <strong>80%</strong> of positions in the fastest-growing sector of the economy: health care.</p>
+
+    <hr>
+    <p class="sources">Sources: NCES Digest of Education Statistics (2023); NPR / U.S. Bureau of Labor Statistics (2026)</p>
+
+    <button class="continue-btn" onclick="showScenario('sc-tb')">Continue →</button>
+
+    <div id="sc-tb" class="scenario">
+      <div class="scenario-text">
+        Maya and Michael both applied to a highly selective research university for the class of 2026. Both graduated from competitive public high schools.<br><br>
+        <strong>Maya:</strong> GPA 3.92, SAT 1540.&nbsp;&nbsp;<strong>Michael:</strong> GPA 3.89, SAT 1550.<br><br>
+        Both were active in engineering clubs and received strong letters of recommendation.<br><br>
+        Neither was admitted through the general pool. However, Michael was subsequently offered admission through the university's <strong>First-Generation College Student Initiative</strong>. Maya was not.
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">Maya was not offered admission. Should the admissions committee review its decision?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="tb-q1" value="1"> Definitely not</label>
+          <label class="option"><input type="radio" name="tb-q1" value="2"> Probably not</label>
+          <label class="option"><input type="radio" name="tb-q1" value="3"> Probably yes</label>
+          <label class="option"><input type="radio" name="tb-q1" value="4"> Definitely yes</label>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">Some students who were not admitted have organized a collective lawsuit against the university, claiming discrimination in the admissions process. How strongly would you encourage Maya to join?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="tb-q2" value="1"> Not at all</label>
+          <label class="option"><input type="radio" name="tb-q2" value="2"> A little</label>
+          <label class="option"><input type="radio" name="tb-q2" value="3"> Quite a bit</label>
+          <label class="option"><input type="radio" name="tb-q2" value="4"> Very strongly</label>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">How confident are you that they could win the lawsuit?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="tb-q3" value="1"> Not at all confident</label>
+          <label class="option"><input type="radio" name="tb-q3" value="2"> Somewhat confident</label>
+          <label class="option"><input type="radio" name="tb-q3" value="3"> Very confident</label>
+          <label class="option"><input type="radio" name="tb-q3" value="4"> Completely confident</label>
+        </div>
+      </div>
+
+      <div class="scale-block">
+        <div class="scale-intro">Please indicate how much you agree with each of the following statements.</div>
+        <table class="likert-table">
+          <thead><tr>
+            <th></th>
+            <th>Strongly<br>disagree</th><th>Disagree</th><th>Neither</th><th>Agree</th><th>Strongly<br>agree</th>
+          </tr></thead>
+          <tbody id="scale-tb"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- CELL C: Control + Maya                 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div id="panel-ca" class="tab-panel">
+
+    <p>Over the past five decades, the U.S. energy sector has undergone significant structural changes. Coal, which once accounted for more than half of all electricity generation, has declined steadily as a share of the national energy mix. In 2022, coal represented <strong>20%</strong> of U.S. electricity generation, down from a peak of over <strong>52%</strong> in the early 1980s.</p>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Share of U.S. electricity generation by source, 1970–2026<br>(coal vs. natural gas)</div>
+      <div class="legend">
+        <span><span class="legend-line" style="background:#185FA5;"></span> Natural gas</span>
+        <span><span class="legend-line" style="background:#B45309;"></span> Coal</span>
+        <span><span class="legend-dashed"></span> <span style="color:#aaa;">Projected</span></span>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chart-ca"></canvas></div>
+      <div class="chart-source">Source: U.S. Energy Information Administration</div>
+    </div>
+
+    <p>This shift has been driven primarily by the falling cost of natural gas extraction following the expansion of hydraulic fracturing technology in the 2000s. In 2016, natural gas surpassed coal for the first time as the leading source of U.S. electricity. By 2022, natural gas accounted for <strong>38%</strong> of total generation. The EIA projects this trend to continue through the end of the decade.</p>
+
+    <hr>
+    <p class="sources">Source: U.S. Energy Information Administration, Electric Power Annual (2023)</p>
+
+    <button class="continue-btn" onclick="showScenario('sc-ca')">Continue →</button>
+
+    <div id="sc-ca" class="scenario">
+      <div class="scenario-text">
+        Maya and Michael both applied to a highly selective research university for the class of 2026. Both graduated from competitive public high schools.<br><br>
+        <strong>Maya:</strong> GPA 3.92, SAT 1540.&nbsp;&nbsp;<strong>Michael:</strong> GPA 3.89, SAT 1550.<br><br>
+        Both were active in engineering clubs and received strong letters of recommendation.<br><br>
+        Neither was admitted through the general pool. However, Maya was subsequently offered admission through the university's <strong>Women in STEM Scholarship Initiative</strong>. Michael was not.
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">Michael was not offered admission. Should the admissions committee review its decision?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="ca-q1" value="1"> Definitely not</label>
+          <label class="option"><input type="radio" name="ca-q1" value="2"> Probably not</label>
+          <label class="option"><input type="radio" name="ca-q1" value="3"> Probably yes</label>
+          <label class="option"><input type="radio" name="ca-q1" value="4"> Definitely yes</label>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">Some students who were not admitted have organized a collective lawsuit against the university, claiming gender discrimination in the admissions process. How strongly would you encourage Michael to join?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="ca-q2" value="1"> Not at all</label>
+          <label class="option"><input type="radio" name="ca-q2" value="2"> A little</label>
+          <label class="option"><input type="radio" name="ca-q2" value="3"> Quite a bit</label>
+          <label class="option"><input type="radio" name="ca-q2" value="4"> Very strongly</label>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">How confident are you that they could win the lawsuit?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="ca-q3" value="1"> Not at all confident</label>
+          <label class="option"><input type="radio" name="ca-q3" value="2"> Somewhat confident</label>
+          <label class="option"><input type="radio" name="ca-q3" value="3"> Very confident</label>
+          <label class="option"><input type="radio" name="ca-q3" value="4"> Completely confident</label>
+        </div>
+      </div>
+
+      <div class="scale-block">
+        <div class="scale-intro">Please indicate how much you agree with each of the following statements.</div>
+        <table class="likert-table">
+          <thead><tr>
+            <th></th>
+            <th>Strongly<br>disagree</th><th>Disagree</th><th>Neither</th><th>Agree</th><th>Strongly<br>agree</th>
+          </tr></thead>
+          <tbody id="scale-ca"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- CELL D: Control + Michael              -->
+  <!-- ═══════════════════════════════════════ -->
+  <div id="panel-cb" class="tab-panel">
+
+    <p>Over the past five decades, the U.S. energy sector has undergone significant structural changes. Coal, which once accounted for more than half of all electricity generation, has declined steadily as a share of the national energy mix. In 2022, coal represented <strong>20%</strong> of U.S. electricity generation, down from a peak of over <strong>52%</strong> in the early 1980s.</p>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Share of U.S. electricity generation by source, 1970–2026<br>(coal vs. natural gas)</div>
+      <div class="legend">
+        <span><span class="legend-line" style="background:#185FA5;"></span> Natural gas</span>
+        <span><span class="legend-line" style="background:#B45309;"></span> Coal</span>
+        <span><span class="legend-dashed"></span> <span style="color:#aaa;">Projected</span></span>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="chart-cb"></canvas></div>
+      <div class="chart-source">Source: U.S. Energy Information Administration</div>
+    </div>
+
+    <p>This shift has been driven primarily by the falling cost of natural gas extraction following the expansion of hydraulic fracturing technology in the 2000s. In 2016, natural gas surpassed coal for the first time as the leading source of U.S. electricity. By 2022, natural gas accounted for <strong>38%</strong> of total generation. The EIA projects this trend to continue through the end of the decade.</p>
+
+    <hr>
+    <p class="sources">Source: U.S. Energy Information Administration, Electric Power Annual (2023)</p>
+
+    <button class="continue-btn" onclick="showScenario('sc-cb')">Continue →</button>
+
+    <div id="sc-cb" class="scenario">
+      <div class="scenario-text">
+        Maya and Michael both applied to a highly selective research university for the class of 2026. Both graduated from competitive public high schools.<br><br>
+        <strong>Maya:</strong> GPA 3.92, SAT 1540.&nbsp;&nbsp;<strong>Michael:</strong> GPA 3.89, SAT 1550.<br><br>
+        Both were active in engineering clubs and received strong letters of recommendation.<br><br>
+        Neither was admitted through the general pool. However, Michael was subsequently offered admission through the university's <strong>First-Generation College Student Initiative</strong>. Maya was not.
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">Maya was not offered admission. Should the admissions committee review its decision?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="cb-q1" value="1"> Definitely not</label>
+          <label class="option"><input type="radio" name="cb-q1" value="2"> Probably not</label>
+          <label class="option"><input type="radio" name="cb-q1" value="3"> Probably yes</label>
+          <label class="option"><input type="radio" name="cb-q1" value="4"> Definitely yes</label>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">Some students who were not admitted have organized a collective lawsuit against the university, claiming discrimination in the admissions process. How strongly would you encourage Maya to join?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="cb-q2" value="1"> Not at all</label>
+          <label class="option"><input type="radio" name="cb-q2" value="2"> A little</label>
+          <label class="option"><input type="radio" name="cb-q2" value="3"> Quite a bit</label>
+          <label class="option"><input type="radio" name="cb-q2" value="4"> Very strongly</label>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label">How confident are you that they could win the lawsuit?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="cb-q3" value="1"> Not at all confident</label>
+          <label class="option"><input type="radio" name="cb-q3" value="2"> Somewhat confident</label>
+          <label class="option"><input type="radio" name="cb-q3" value="3"> Very confident</label>
+          <label class="option"><input type="radio" name="cb-q3" value="4"> Completely confident</label>
+        </div>
+      </div>
+
+      <div class="scale-block">
+        <div class="scale-intro">Please indicate how much you agree with each of the following statements.</div>
+        <table class="likert-table">
+          <thead><tr>
+            <th></th>
+            <th>Strongly<br>disagree</th><th>Disagree</th><th>Neither</th><th>Agree</th><th>Strongly<br>agree</th>
+          </tr></thead>
+          <tbody id="scale-cb"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.card -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+  /* ── Tab switching ── */
+  const tabs = ['ta','tb','ca','cb'];
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('active', tabs[i] === name);
+    });
+    tabs.forEach(t => {
+      document.getElementById('panel-' + t).classList.toggle('active', t === name);
+    });
+    if ((name === 'ca' || name === 'cb') && !window._energyInit) {
+      window._energyInit = true;
+      initEnergyCharts();
+    }
+  }
+
+  /* ── Show scenario ── */
+  function showScenario(id) {
+    const el = document.getElementById(id);
+    el.style.display = 'block';
+    el.previousElementSibling.style.display = 'none';
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ── Highlight selected option ── */
+  document.addEventListener('change', e => {
+    if (e.target.type === 'radio') {
+      const name = e.target.name;
+      document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+        r.closest('.option').classList.toggle('selected', r.checked);
+      });
+    }
+  });
+
+  /* ── Scale items ── */
+  const scaleItems = [
+    "Discrimination against women in the labor force is no longer a problem in the United States.",
+    "I consider the present employment system to be fair to women.",
+    "Women shouldn't push themselves where they are not wanted.",
+    "Women will make more progress by being patient and not pushing too hard for change.",
+    "It is difficult to work for a female boss.",
+    "Women's requests in terms of equality between the sexes are simply exaggerated.",
+    "Over the past few years, women have gotten more from government than they deserve.",
+    "Universities are wrong to admit women in costly programs such as medicine, when in fact, a large number will leave their jobs after a few years to raise their children.",
+    "In order not to appear sexist, many men are inclined to over compensate women.",
+    "Due to social pressures, firms frequently have to hire underqualified women.",
+    "In a fair employment system, men and women would be considered equal."
+  ];
+
+  function buildScale(tbodyId, prefix) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    scaleItems.forEach((item, i) => {
+      const tr = document.createElement('tr');
+      let cells = `<td>${item}</td>`;
+      for (let v = 1; v <= 5; v++) {
+        cells += `<td><input type="radio" name="${prefix}-ns${i}" value="${v}"></td>`;
+      }
+      tr.innerHTML = cells;
+      tbody.appendChild(tr);
+    });
+  }
+
+  ['ta','tb','ca','cb'].forEach(p => buildScale('scale-' + p, p));
+
+  /* ── Chart helpers ── */
+  const base = { pointRadius:0, tension:0.35, spanGaps:false };
+
+  function makeEnrollChart(canvasId) {
+    const labels = [1970,1975,1980,1985,1990,1995,2000,2005,2010,2015,2020,2022,2024,2026];
+    new Chart(document.getElementById(canvasId), {
+      type: 'line',
+      data: { labels, datasets: [
+        { ...base, data:[43,45.5,51,52.5,54,55,56,56.5,57,56.5,57.5,58,null,null], borderColor:'#185FA5', borderWidth:2.5 },
+        { ...base, data:[null,null,null,null,null,null,null,null,null,null,null,58,58.5,59], borderColor:'#185FA5', borderWidth:2, borderDash:[6,4] },
+        { ...base, data:[57,54.5,49,47.5,46,45,44,43.5,43,43.5,42.5,42,null,null], borderColor:'#1D9E75', borderWidth:2.5 },
+        { ...base, data:[null,null,null,null,null,null,null,null,null,null,null,42,41.5,41], borderColor:'#1D9E75', borderWidth:2, borderDash:[6,4] },
+      ]},
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } },
+        scales:{
+          x:{ ticks:{ font:{size:11}, color:'#999', maxRotation:0, autoSkip:false,
+                callback:(v,i)=>[1970,1980,1990,2000,2010,2020,2026].includes(labels[i])?labels[i]:'' },
+              grid:{ color:'rgba(0,0,0,0.07)' }, border:{ color:'rgba(0,0,0,0.15)' } },
+          y:{ min:40, max:62, ticks:{ font:{size:11}, color:'#999', callback:v=>v+'%', stepSize:4 },
+              grid:{ color:'rgba(0,0,0,0.07)' }, border:{ color:'rgba(0,0,0,0.15)' } }
+        }
+      }
+    });
+  }
+
+  function makeEnergyChart(canvasId) {
+    const labels = [1970,1975,1980,1985,1990,1995,2000,2005,2010,2015,2016,2018,2020,2022,2024,2026];
+    new Chart(document.getElementById(canvasId), {
+      type: 'line',
+      data: { labels, datasets: [
+        { ...base, data:[14,15,12,12,13,14,16,19,24,31,34,35,40,38,null,null], borderColor:'#185FA5', borderWidth:2.5 },
+        { ...base, data:[null,null,null,null,null,null,null,null,null,null,null,null,null,38,39,40], borderColor:'#185FA5', borderWidth:2, borderDash:[6,4] },
+        { ...base, data:[46,44,51,57,52,50,52,50,45,33,30,27,19,20,null,null], borderColor:'#B45309', borderWidth:2.5 },
+        { ...base, data:[null,null,null,null,null,null,null,null,null,null,null,null,null,20,18,16], borderColor:'#B45309', borderWidth:2, borderDash:[6,4] },
+      ]},
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } },
+        scales:{
+          x:{ ticks:{ font:{size:11}, color:'#999', maxRotation:0, autoSkip:false,
+                callback:(v,i)=>[1970,1980,1990,2000,2010,2016,2020,2026].includes(labels[i])?labels[i]:'' },
+              grid:{ color:'rgba(0,0,0,0.07)' }, border:{ color:'rgba(0,0,0,0.15)' } },
+          y:{ min:8, max:62, ticks:{ font:{size:11}, color:'#999', callback:v=>v+'%', stepSize:10 },
+              grid:{ color:'rgba(0,0,0,0.07)' }, border:{ color:'rgba(0,0,0,0.15)' } }
+        }
+      }
+    });
+  }
+
+  function initEnergyCharts() {
+    makeEnergyChart('chart-ca');
+    makeEnergyChart('chart-cb');
+  }
+
+  /* Init enrollment charts immediately */
+  makeEnrollChart('chart-ta');
+  makeEnrollChart('chart-tb');
+</script>
+
+</body>
+</html>
