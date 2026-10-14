@@ -231,6 +231,16 @@ svg.chart .muted{fill:var(--ink-2)}
 .kit ol li b{display:block;margin-bottom:2px}
 .kit ol li span{color:var(--ink-2);font-size:21px}
 
+
+/* age panels */
+.agep{display:grid;grid-template-columns:1fr 1fr;gap:56px;margin-top:30px}
+.agep .pan h3{font-size:28px;margin-bottom:4px}
+.agep .pan .small{margin-bottom:18px}
+.abar{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;font-size:24px;margin-bottom:14px}
+.abar .lab{color:var(--ink-2);text-align:right;font-variant-numeric:tabular-nums lining-nums}
+.abar .bar{height:44px;background:var(--turq);border-radius:0 4px 4px 0;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;color:#fff;font-weight:700;font-size:24px;box-sizing:border-box;font-variant-numeric:tabular-nums lining-nums}
+.agep .dir{font-size:22px;font-style:italic;color:var(--ink-2);margin-top:6px}
+
 /* progressive builds */
 [data-step]{transition:opacity .4s ease, transform .4s ease}
 .pre{opacity:0 !important;visibility:hidden;transform:translateY(12px)}
@@ -566,6 +576,32 @@ g.pre{transform:none}
   </div>
   <p class="src">Pew validated voters (June 2025); American Electorate Voter Poll via Brookings (Nov. 2024); ANES 2024, speaker’s weighted estimate; National Exit Poll 2024; Edison exit polls 2016–2024 via Axios (Oct. 5, 2026).</p>
   <aside class="notes">Mensaje simple: todas las fuentes, con métodos distintos, apuntan en la misma dirección. Los hombres latines votaron más por Trump que las mujeres, y la tendencia crece de 2016 a 2024. Posibles explicaciones: economía y costo de vida (Brookings lo señala como motor principal), trabajo, redes sociales, campañas dirigidas a hombres jóvenes, menos contacto de los demócratas (45% de los hombres latines dice que nadie lo contactó).</aside>
+</section>
+
+<!-- 10b AGE BY SOURCE -->
+<section class="slide" data-sec="4" id="s10b">
+  <div class="eyebrow">4 · Jóvenes y mayores <span class="tr">Young and old</span></div>
+  <h2 style="font-size:52px">Age divides Latine voters less clearly than gender</h2>
+  <div class="agep">
+    <div class="pan" data-step="1">
+      <h3>American Electorate Voter Poll</h3>
+      <p class="small">Latine men, share voting Trump, 2024</p>
+        <div class="abar"><span class="lab">Under 40</span><span class="bar" style="width:96%">48%</span></div>
+        <div class="abar"><span class="lab">40–59</span><span class="bar" style="width:80%">40%</span></div>
+        <div class="abar"><span class="lab">60+</span><span class="bar" style="width:74%">37%</span></div>
+      <p class="dir">Younger men lean more toward Trump.</p>
+    </div>
+    <div class="pan" data-step="2">
+      <h3>ANES 2024</h3>
+      <p class="small">Latine men, share voting Trump, 2024</p>
+        <div class="abar"><span class="lab">18–39</span><span class="bar" style="width:68%">34%</span></div>
+        <div class="abar"><span class="lab">40–59</span><span class="bar" style="width:78%">39%</span></div>
+        <div class="abar"><span class="lab">60+</span><span class="bar" style="width:86%">43%</span></div>
+      <p class="dir">Younger men lean less toward Trump.</p>
+    </div>
+  </div>
+  <p class="src">American Electorate Voter Poll (BSP Research) via Brookings (Sanchez, Nov. 2024); ANES 2024, speaker’s weighted estimate, two-party vote (n = 40, 44, 42).</p>
+  <aside class="notes">Comparar con la diapositiva anterior: con género todas las fuentes coinciden; con edad no. La encuesta AEV (Brookings) muestra que el apoyo a Trump entre hombres latinos baja con la edad (48, 40, 37). ANES muestra lo contrario, pero con muy pocos casos: unos 40 hombres latinos por grupo de edad, así que un par de respuestas mueven el número varios puntos. Mensaje: la historia de "los hombres jóvenes latinos" tiene apoyo, pero es menos sólida que la de género. Entre mujeres, ANES no muestra un patrón claro por edad (15%, 34%, 20%).</aside>
 </section>
 
 <!-- 12 PENDULUM -->
