@@ -448,7 +448,6 @@ g.pre{transform:none}
     <div class="col" style="flex:1">
       <h2>A shared “we” was also built on songs and stories</h2>
       <p class="body" style="margin-top:8px">Music and telenovelas crossed borders that politics did not. People who had never met learned the same lyrics and cried over the same plots.</p>
-      <div class="ask" style="margin-top:22px" data-step="3"><b>Ask the room</b> What is your family’s Selena? A song, a show, a team everyone knows?</div>
     </div>
     <div class="culture" style="width:760px">
       <figure data-step="1">
@@ -644,18 +643,11 @@ g.pre{transform:none}
 <!-- 14 FORECAST -->
 <section class="slide" data-sec="5" id="s14">
   <div class="eyebrow">5 · Pronóstico <span class="tr">Forecast</span></div>
-  <h2>Your forecast for November 3</h2>
-  <p class="body" style="margin-top:14px;max-width:46ch">What share of the Latine vote will Democratic House candidates win? Agree on one number as a room.</p>
-  <div class="fc">
-    <label for="forecast">Our forecast</label>
-    <input id="forecast" type="number" min="30" max="80" step="1" inputmode="numeric" placeholder="—">
-    <span style="font-size:28px">%</span>
-    <button class="btn" type="button" id="lock">Lock it in</button>
-    <span class="small" id="lockMsg"></span>
-  </div>
-  <svg class="chart" id="fcScale" width="1360" height="230" style="margin-top:36px" role="img" aria-label="Scale comparing the room forecast with recent polls"></svg>
+  <h2>What the polls predict for November 3</h2>
+  <p class="body" style="margin-top:14px;max-width:52ch">Share of the Latine vote for Democrats: the 2024 result and the latest 2026 polls.</p>
+  <svg class="chart" id="fcScale" width="1360" height="230" style="margin-top:70px" role="img" aria-label="Scale comparing the 2024 Latine vote for Harris (51%) with 2026 polls showing 56% to 60% for Democrats"></svg>
   <p class="src">References: Pew validated 2024 (Harris 51%); BSP/Shaw seven battleground states, Sept. 2026 (56%); NBC/Telemundo, Sept. 2026 (59%); CBS/YouGov likely voters, 2026 (60%).</p>
-  <aside class="notes">Que discutan y acuerden un número. Guardarlo (se queda en este navegador). Prometer volver a mirarlo después del 3 de noviembre.</aside>
+  <aside class="notes">Comparar el punto de partida (Harris 51% entre votantes validados en 2024) con las encuestas de 2026: entre 56% y 60% para los demócratas. Si se cumplen, sería una recuperación importante, pero recordar las tres advertencias de la diapositiva anterior: elecciones de medio término, encuestas que fallaron en 2024 y quién va a votar.</aside>
 </section>
 
 <!-- 14b TOOLKIT -->
@@ -978,7 +970,6 @@ g.pre{transform:none}
   })();
 
   /* forecast scale */
-  const KEY='votolatino.forecast';
   function drawScale(val){
     const s=document.getElementById('fcScale'); s.innerHTML='';
     const lx=40, W=1280, lo=40, hi=70, X=v=>lx+(v-lo)/(hi-lo)*W;
@@ -998,15 +989,7 @@ g.pre{transform:none}
       el('text',{x:X(v),y:52,'text-anchor':'middle','font-size':26,'font-weight':700,fill:C('--achiote'),class:'num'},s,'Room: '+val+'%');
     }
   }
-  let saved=null; try{ const v=localStorage.getItem(KEY); if(v!==null) saved=+v; }catch(e){}
-  const fin=document.getElementById('forecast'); if(saved!=null){ fin.value=saved; }
-  drawScale(saved);
-  document.getElementById('lock').addEventListener('click',()=>{
-    const v=parseInt(fin.value,10); const msg=document.getElementById('lockMsg');
-    if(isNaN(v)||v<30||v>80){ msg.textContent='Enter a number between 30 and 80.'; return; }
-    try{ localStorage.setItem(KEY,String(v)); msg.textContent='Saved in this browser.'; }catch(e){ msg.textContent='Locked for this session.'; }
-    drawScale(v); applyStep();
-  });
+  drawScale(null);
 
   /* ---------- photo slots ---------- */
   document.querySelectorAll('.photo').forEach(p=>{
